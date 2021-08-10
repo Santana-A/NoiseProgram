@@ -56,12 +56,11 @@ def sweep():
 	#find strongest signals in each row of the data
 	u_slice = unique[:,[4,5,6,7,8]]
 	arr = np.array(u_slice).astype(np.float)
-	#print(arr.max(axis=1))
 	arrMax = arr.max(axis=1)
 	
+	#create slice with first frequency listed for each line
 	f_slice = unique[:,[0]]
 	freq_arr = np.array(f_slice).flatten()
-	#print(freq_arr[0])
 	
 	arr2 = np.array(unique).astype(np.float)
 
@@ -70,8 +69,8 @@ def sweep():
 	arrMaxs = np.sort(arrMax)[::-1]
 	strongSignal = []
 	
+	#store the strongest forty frequencies 
 	for i in range(0, 40):
-		#print(arrMaxs[i])
 		r, c = (np.where(arr2 == arrMaxs[i]))
 		row_num = int(r[0])
 		col_num = int(c[0])
@@ -121,6 +120,8 @@ def sweep():
 		
 	root.update()
 	c.config(scrollregion=c.bbox("all"))
+
+#store selected frequency and send it to the interference function
 def selected(v):
 	for widget in buttons.winfo_children():
 		widget.destroy()
@@ -130,7 +131,7 @@ def selected(v):
 	noisy.pack(side=BOTTOM)
 	
 	
-	
+#transmit noise at the selected frquency	
 def interference(sig):
 	process2 = subprocess.Popen(['hackrf_transfer', '-t', 'noise', '-f', str(sig), '-s', '100000', '-l', '16', '-g', '0', '-x', '47'])
 	try:
@@ -143,7 +144,7 @@ def interference(sig):
 	
 
 	
-	
+#allow for custom frequency to be input	
 def customEntry():
 	for widget in buttons.winfo_children():
 		widget.destroy()
@@ -173,8 +174,7 @@ def customEntry():
 	#noisy.pack()
 	
 	
-	
-	
+#store input frequency and send it to the customInterference function	
 def customSelect(v):
 	for widget in buttons.winfo_children():
 		widget.destroy()
@@ -182,7 +182,8 @@ def customSelect(v):
 	selectedButton = v.get()
 	noisy = tk.Button(buttons, text="Run Interference", width=48, command= lambda: customInterference(selectedButton))
 	noisy.pack()
-	
+
+#transmit noise at the input frquency		
 def customInterference(frequency):	
 	process2 = subprocess.Popen(['hackrf_transfer', '-t', 'noise', '-f', str(frequency), '-s', '100000', '-l', '16', '-g', '0', '-x', '47'])
 	try:
@@ -205,12 +206,6 @@ start.pack()
 
 custom = tk.Button(buttons, text="Custom Frequency", width=48, command=customEntry)
 custom.pack()
-
-#custom = tk.Button(root, text="Custom Frequency", width=48, command=customEntry)
-#custom.pack(side=BOTTOM)
-
-#start = tk.Button(root, text="Start Sweep", width=48, command=sweep)
-#start.pack(side=BOTTOM)
 
 
 root.mainloop()
